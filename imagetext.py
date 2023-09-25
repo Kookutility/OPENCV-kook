@@ -2,6 +2,7 @@ import cv2
 import pytesseract
 import numpy as np
 from tkinter import Tk, Label, Button, filedialog, Text
+from PIL import ImageGrab
 
 pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 point_list = []
@@ -9,21 +10,17 @@ point_list = []
 class ImageScanner:
     def __init__(self, window):
         self.window = window
-        window.title("이미지 텍스트 추출기")
+        window.title("Image Scanner and Text Extractor")
+        self.capture_button = Button(window, text="화면 캡쳐", command=self.capture_screen)
+        self.capture_button.pack()
 
-        self.label = Label(window, text="이미지 선택")
-        self.label.pack()
-
-        self.select_button = Button(window, text="이미지 선택", command=self.select_image)
-        self.select_button.pack()
-
-        self.text_area = Text(window, height=15, width=50)
+        self.text_area = Text(window, height=30, width=100)
         self.text_area.pack()
 
-    def select_image(self):
-        file_path = filedialog.askopenfilename()
-        if file_path:
-            self.scan_image(file_path)
+    def capture_screen(self):
+        capture = ImageGrab.grab()
+        capture.save("text.jpg")
+        self.scan_image("text.jpg")
 
     def scan_image(self, image_path):
         global point_list
@@ -66,6 +63,7 @@ class ImageScanner:
             cv2.line(dst_img, prev_point, next_point, (255, 0, 255), 3, cv2.LINE_AA)
             cv2.imshow('Select Area', dst_img)
             cv2.waitKey(0)
+            cv2.destroyAllWindows
 
         cv2.imshow('Select Area', dst_img)
 
